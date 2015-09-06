@@ -1,0 +1,38 @@
+#!/bin/sh
+set -x
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+MAIN_FILE="${1%.tex}"
+OUTPUT_FOLDER="$2"
+HTML_SETTINGS="$SCRIPT_DIR/html-plain,fn-in,charset=utf-8" 
+ENCODING="-cunihtf -utf8"
+
+
+pdflatex $MAIN_FILE
+bibtex   $MAIN_FILE
+pdflatex $MAIN_FILE
+pdflatex $MAIN_FILE
+
+latex $5 '\makeatletter\def\HCode{\futurelet\HCode\HChar}\def\HChar{\ifx"\HCode\def\HCode"##1"{\Link##1}\expandafter\HCode\else\expandafter\Link\fi}\def\Link#1.a.b.c.{\g@addto@macro\@documentclasshook{\RequirePackage[#1,html]{tex4ht}}\let\HCode\documentstyle\def\documentstyle{\let\documentstyle\HCode\expandafter\def\csname tex4ht\endcsname{#1,html}\def\HCode####1{\documentstyle[tex4ht,}\@ifnextchar[{\HCode}{\documentstyle[tex4ht]}}}\makeatother\HCode '$HTML_SETTINGS'.a.b.c.\input ' $MAIN_FILE
+#latex $5 '\makeatletter\def\HCode{\futurelet\HCode\HChar}\def\HChar{\ifx"\HCode\def\HCode"##1"{\Link##1}\expandafter\HCode\else\expandafter\Link\fi}\def\Link#1.a.b.c.{\g@addto@macro\@documentclasshook{\RequirePackage[#1,html]{tex4ht}}\let\HCode\documentstyle\def\documentstyle{\let\documentstyle\HCode\expandafter\def\csname tex4ht\endcsname{#1,html}\def\HCode####1{\documentstyle[tex4ht,}\@ifnextchar[{\HCode}{\documentstyle[tex4ht]}}}\makeatother\HCode '$HTML_SETTINGS'.a.b.c.\input ' $MAIN_FILE
+#latex $5 '\makeatletter\def\HCode{\futurelet\HCode\HChar}\def\HChar{\ifx"\HCode\def\HCode"##1"{\Link##1}\expandafter\HCode\else\expandafter\Link\fi}\def\Link#1.a.b.c.{\g@addto@macro\@documentclasshook{\RequirePackage[#1,html]{tex4ht}}\let\HCode\documentstyle\def\documentstyle{\let\documentstyle\HCode\expandafter\def\csname tex4ht\endcsname{#1,html}\def\HCode####1{\documentstyle[tex4ht,}\@ifnextchar[{\HCode}{\documentstyle[tex4ht]}}}\makeatother\HCode '$HTML_SETTINGS'.a.b.c.\input ' $MAIN_FILE
+
+tex4ht -f/$MAIN_FILE  -i~/tex4ht.dir/texmf/tex4ht/ht-fonts/ $ENCODING
+t4ht -f/$MAIN_FILE -d$OUTPUT_FOLDER
+
+tidy $MAIN_FILE.html > $MAIN_FILE-tidy.html
+$SCRIPT_DIR/post-process-html.py $MAIN_FILE-tidy.html > $MAIN_FILE-final.html
+
+perl -pi -e 's/\xef\xac\x80/ff/g'  $MAIN_FILE-final.html
+perl -pi -e 's/\xef\xac\x81/fi/g'  $MAIN_FILE-final.html
+perl -pi -e 's/\xef\xac\x82/fl/g'  $MAIN_FILE-final.html
+perl -pi -e 's/\xef\xac\x83/ffi/g' $MAIN_FILE-final.html
+perl -pi -e 's/\xef\xac\x84/ffl/g' $MAIN_FILE-final.html
+perl -pi -e 's/\xc5\x92/OE/g'      $MAIN_FILE-final.html
+perl -pi -e 's/\xc5\x93/oe/g'      $MAIN_FILE-final.html
+perl -pi -e 's/\xc3\x86/AE/g'      $MAIN_FILE-final.html
+perl -pi -e 's/\xc3\xa6/ae/g'      $MAIN_FILE-final.html
+perl -pi -e 's/\xef\xac\x86/st/g'  $MAIN_FILE-final.html
+perl -pi -e 's/\xc4\xb2/IJ/g'      $MAIN_FILE-final.html
+perl -pi -e 's/\xc4\xb3/ij/g'      $MAIN_FILE-final.html
