@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 import re
 import sys
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment, Doctype
 
-soup = BeautifulSoup(open(sys.argv[1]))
+# soup = BeautifulSoup(open(sys.argv[1]), "html.parser")
+soup = BeautifulSoup(open(sys.argv[1]), "html5lib")
+
 
 def combine_citation_links(soup):
   for e in soup.find_all("a", href=re.compile("^#")):
@@ -38,6 +40,33 @@ def remove_font_spans(soup):
     e.replace_with(e.contents[0])
   for e in soup.find_all("span", {'class' : re.compile("^ptmr") }):
     e.replace_with(e.contents[0])
+
+def remove_following_newline(e):
+  sibling = e.next_sibling
+  if sibling.string == '\n':
+    sibling.extract()
+
+def remove_unwanted_meta(soup):
+  for e in soup.find_all("meta"):
+    if e.has_attr('name') and e['name'] in ['date', 'src', 'originator', 'generator']:
+      remove_following_newline(e)
+      e.extract()
+  
+def remove_tex4ht_comments(soup):
+  for e in soup.find_all(text=lambda text:isinstance(text, Doctype)):
+    remove_following_newline(e)
+    e.extract()
+
+  for e in soup.find_all(text=lambda text:isinstance(text, Comment)):
+    if 'fn-in,' in e.string or e.string.startswith('?xml') or e.string.startswith('http://www.w3.org/TR/xhtml1'):
+      remove_following_newline(e)
+      e.extract()
+    else:
+      print e
+
+
+remove_tex4ht_comments(soup)
+remove_unwanted_meta(soup)
 
 combine_citation_links(soup)
 remove_font_spans(soup) 
