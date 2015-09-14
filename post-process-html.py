@@ -64,10 +64,17 @@ def remove_tex4ht_comments(soup):
     else:
       print e
 
+def remove_superfluous_id_after_footnote(soup):
+  for e in soup.find_all("sup", {'class' : 'textsuperscript'}):
+    sib = e.next_sibling
+    if sib.name == "a" and sib.has_attr('id') and sib.has_attr('name') and sib['id'] == sib['name']:
+      sib.extract()
+      
 
 remove_tex4ht_comments(soup)
 remove_unwanted_meta(soup)
 
+remove_superfluous_id_after_footnote(soup)
 combine_citation_links(soup)
 remove_font_spans(soup) 
 print soup.encode(encoding="utf-8", formatter="html")
