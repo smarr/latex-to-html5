@@ -21,7 +21,7 @@ latex $5 '\makeatletter\def\HCode{\futurelet\HCode\HChar}\def\HChar{\ifx"\HCode\
 tex4ht -f/$MAIN_FILE  -i~/tex4ht.dir/texmf/tex4ht/ht-fonts/ $ENCODING
 t4ht -f/$MAIN_FILE -d$OUTPUT_FOLDER
 
-tidy $MAIN_FILE.html > $MAIN_FILE-tidy.html
+tidy -ashtml -utf8 $MAIN_FILE.html > $MAIN_FILE-tidy.html
 $SCRIPT_DIR/post-process-html.py $MAIN_FILE-tidy.html > $MAIN_FILE-final.html
 
 perl -pi -e 's/\xef\xac\x80/ff/g'  $MAIN_FILE-final.html
