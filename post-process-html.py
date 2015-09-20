@@ -1,36 +1,87 @@
 #!/usr/bin/env python
 import re
 import sys
-from bs4 import BeautifulSoup, Comment, Doctype
+from bs4 import BeautifulSoup, Comment, Doctype, Tag, NavigableString
 
 # soup = BeautifulSoup(open(sys.argv[1]), "html.parser")
 soup = BeautifulSoup(open(sys.argv[1]), "html5lib")
 
 
 def combine_citation_links(soup):
-  for e in soup.find_all("a", href=re.compile("^#")):
-    # print e
-    # print '---'
-    # print (True if e.parent else False)
-    # print '==='
-    # print e.next_sibling == u',\xa0'
-    # print '+++'
-    # print True if e.next_sibling.next_sibling.children else False
-    # e.parent and
-    
-    
-    # if comma separates the parts of a references:
-    #if e.next_sibling == u',\xa0' and e.next_sibling.next_sibling.children:
-    if e.next_sibling == u'\xa0' and e.next_sibling.next_sibling.children:
-      #print e
-      comma_space_node = e.next_sibling
-      year_node_a      = e.next_sibling.next_sibling
-      assert e.href == year_node_a.href # should be always the same, because we want to merge those two <a> tags
-      year_node        = year_node_a.contents[0]
-      comma_space_node.extract()
-      year_node_a.extract()
-      e.append(comma_space_node)
-      e.append(year_node)
+    for e in soup.find_all("a", href=re.compile("^#")):
+        # find_all will create a list, that also contains stuff
+        # we already processed, i.e., without parent
+        if e.parent is None:
+            continue
+
+        if e.previous_sibling == u',\xa0':
+            # within a list, use normal spaces to avoid typesetting issues
+            e.previous_sibling.replace_with(", ")
+
+        # also ignore just year links, we might just have fixed the space before
+        if e.contents[0].isnumeric():
+            continue
+
+        # Process text like '<a>Author</a>&nbsp;[<a>Year</a>]'
+        if (e.next_sibling == u'\xa0[' and e.next_sibling and
+                e.next_sibling.next_sibling and
+                e.next_sibling.next_sibling.next_sibling):
+            space_bracket = e.next_sibling
+            year_node_a   = e.next_sibling.next_sibling
+            following_bracket_and_more = e.next_sibling.next_sibling.next_sibling
+
+            if unicode(following_bracket_and_more)[0] == ']':
+                assert e.attrs['href'] == year_node_a.attrs['href'], "should be always the same, because we want to merge those two <a> tags"
+                year = unicode(year_node_a.contents[0])
+                e.contents[0].replace_with(e.contents[0] + u'\xa0[' + year + "]")
+                space_bracket.extract()
+                year_node_a.extract()
+
+                # remove closing bracket
+                following_bracket_and_more.replace_with(
+                    unicode(following_bracket_and_more)[1:])
+                continue
+            else:
+                # transform 'Author&nbsp;[<a>Year</a>, <a>Year2</a>]'
+                e.replace_with(e.contents[0])  # remove link from author
+                continue
+
+        # Process text like '[<a>Author</a>,&nbsp;<a>Year</a>]'
+        if (e.next_sibling == u',\xa0' and
+                isinstance(e.next_sibling.next_sibling, Tag) and
+                e.next_sibling.next_sibling.name == "a" and
+                e.next_sibling.next_sibling.attrs['href'] == e.attrs['href']):
+            comma_space_node = e.next_sibling
+            year_node_a      = e.next_sibling.next_sibling
+            year_node        = year_node_a.contents[0]
+
+            if (year_node_a.next_sibling and
+                    year_node_a.next_sibling.next_sibling and
+                    year_node_a.next_sibling.next_sibling.name == "a" and
+                    year_node_a.next_sibling.next_sibling.contents[0].isnumeric()):
+                # looks like we got multiple years with the same author in
+                # succession, remove the link on the author to avoid confusion
+                prev = e.previous_sibling
+                if prev == u',\xa0':
+                    prev.replace_with(", ")
+                elif (isinstance(prev, NavigableString) and
+                        unicode(prev)[-1] == "["):
+                    prev.replace_with(s[:-2] + u"\N{THIN SPACE}[")
+                e.replace_with(e.contents[0])
+
+            else:
+                comma_space_node.extract()
+                year_node_a.extract()
+                e.append(comma_space_node)
+                e.append(year_node)
+
+                # now, make sure we have the bracket directly connected with
+                # a &thinsp; to the element before
+                assert isinstance(e.previous_sibling, NavigableString)
+                s = unicode(e.previous_sibling)
+                assert s[-1] == "["
+                assert s[-2].isspace()
+                e.previous_sibling.replace_with(s[:-2] + u"\N{THIN SPACE}[")
 
 
 def remove_font_spans(soup):

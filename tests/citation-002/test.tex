@@ -1,0 +1,30 @@
+\documentclass{article}
+
+\usepackage[square,sort,comma,authoryear]{natbib}
+
+\usepackage{url}                  % format URLs
+
+\begin{document}
+
+citet example: \citet{Test:Book,Test:Inproceedings,Test:Article}.
+
+
+ctanchor\,\citep{Test:Book,Test:Inproceedings,Test:Article}.
+
+
+citet example: \citet{Test:Book}.
+
+
+ctanchor\,\citep{Test:Book}.
+
+
+citet example: \citet{Test:Book,Test:Inproceedings}.
+
+
+ctanchor\,\citep{Test:Inproceedings,Test:Article}.
+
+
+\bibliographystyle{abbrvnat}
+\bibliography{references}
+
+\end{document}
