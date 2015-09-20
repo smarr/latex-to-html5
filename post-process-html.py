@@ -127,6 +127,56 @@ def remove_superfluous_id_after_footnote(soup):
             sib.extract()
       
 
+def transform_header(soap):
+    head = soup.find("div", {"class" : "maketitle"})
+    if not head:
+        return
+    assert head.contents[1].name == "h2"
+    assert head.contents[3].name == "div"
+
+    if head.contents[0] == "\n":
+        head.contents[0].extract()
+    title_h2 = head.contents[0].extract()
+    title = title_h2.string
+
+    if head.contents[0] == "\n":
+        head.contents[0].extract()
+    author_div = head.contents[0].extract()
+    authors = author_div.string
+
+    title_h1 = soup.new_tag("h1")
+    title_h1.string = title
+
+    title_tag = soup.find("title")
+    title_tag.string = title
+    meta_author = soup.new_tag("meta")
+    meta_author.attrs['name'] = "author"
+    meta_author.attrs['content'] = authors
+
+    head_tag = soup.find("head")
+    head_tag.append(meta_author)
+
+    header = soup.new_tag("header")
+    header.append(title_h1)
+    header.append(author_div)
+
+    while len(head.contents) > 0:
+        e = head.contents[0].extract()
+        header.append(e)
+    head.replace_with(header)
+
+    # move abstract, if available
+    abstract = soup.find("div", {"class" : "abstract"})
+    if abstract:
+        header.append(abstract.extract())
+        ab_t = abstract.find("div", {"class" : "center"})
+        if ab_t.p.string == "Abstract":
+            ab_t.extract()
+            ab_t = soup.new_tag("h3")
+            ab_t.string = "Abstract"
+            abstract.insert(0, ab_t)
+
+
 def wrap_body_in_article(soup):
     body = soup.find("body")
     article = soup.new_tag("article")
@@ -153,6 +203,7 @@ remove_unwanted_meta(soup)
 remove_superfluous_id_after_footnote(soup)
 combine_citation_links(soup)
 remove_font_spans(soup)
+transform_header(soup)
 add_line_numbers_to_listings(soup)
 result = soup.encode(encoding="utf-8", formatter="html")
 
