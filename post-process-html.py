@@ -86,5 +86,13 @@ remove_unwanted_meta(soup)
 
 remove_superfluous_id_after_footnote(soup)
 combine_citation_links(soup)
-remove_font_spans(soup) 
-print soup.encode(encoding="utf-8", formatter="html")
+remove_font_spans(soup)
+result = soup.encode(encoding="utf-8", formatter="html")
+
+result = result.replace('\xef\xac\x80', 'ff')
+result = result.replace('\xef\xac\x81', 'fi')
+result = result.replace('\xef\xac\x82', 'fl')
+result = result.replace('\xef\xac\x83', 'ffi')
+result = result.replace('\xef\xac\x84', 'ffl')
+
+print result

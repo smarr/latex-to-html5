@@ -23,16 +23,3 @@ t4ht -f/$MAIN_FILE -d$OUTPUT_FOLDER
 
 tidy -ashtml -utf8 $MAIN_FILE.html > $MAIN_FILE-tidy.html
 $SCRIPT_DIR/post-process-html.py $MAIN_FILE-tidy.html > $MAIN_FILE-final.html
-
-perl -pi -e 's/\xef\xac\x80/ff/g'  $MAIN_FILE-final.html
-perl -pi -e 's/\xef\xac\x81/fi/g'  $MAIN_FILE-final.html
-perl -pi -e 's/\xef\xac\x82/fl/g'  $MAIN_FILE-final.html
-perl -pi -e 's/\xef\xac\x83/ffi/g' $MAIN_FILE-final.html
-perl -pi -e 's/\xef\xac\x84/ffl/g' $MAIN_FILE-final.html
-perl -pi -e 's/\xc5\x92/OE/g'      $MAIN_FILE-final.html
-perl -pi -e 's/\xc5\x93/oe/g'      $MAIN_FILE-final.html
-perl -pi -e 's/\xc3\x86/AE/g'      $MAIN_FILE-final.html
-perl -pi -e 's/\xc3\xa6/ae/g'      $MAIN_FILE-final.html
-perl -pi -e 's/\xef\xac\x86/st/g'  $MAIN_FILE-final.html
-perl -pi -e 's/\xc4\xb2/IJ/g'      $MAIN_FILE-final.html
-perl -pi -e 's/\xc4\xb3/ij/g'      $MAIN_FILE-final.html
