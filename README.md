@@ -37,3 +37,7 @@ Pull requests to improve the situation are very welcome.
 
 There are a couple of basic tests in `tests`, which can be executed with
 `run-tests.py`.
+
+### License
+
+This project is licensed under the MIT license: https://opensource.org/licenses/MIT
