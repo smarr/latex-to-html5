@@ -80,6 +80,16 @@ def wrap_body_in_article(soup):
     body.append(article)
 
 
+def add_line_numbers_to_listings(soup):
+    for f in soup.find_all("figure"):
+        div_ln = f.find("div", {"class" : "linenumbers"})
+        if div_ln:
+            code = f.find("code")
+            lines = code.find_all("a")  # find by labels, might be brittle
+            ln_nums = " ".join([str(i) for i in range(1, len(lines) + 1)])
+            div_ln.string = ln_nums
+
+
 wrap_body_in_article(soup)
 remove_tex4ht_comments(soup)
 remove_unwanted_meta(soup)
@@ -87,6 +97,7 @@ remove_unwanted_meta(soup)
 remove_superfluous_id_after_footnote(soup)
 combine_citation_links(soup)
 remove_font_spans(soup)
+add_line_numbers_to_listings(soup)
 result = soup.encode(encoding="utf-8", formatter="html")
 
 result = result.replace('\xef\xac\x80', 'ff')
