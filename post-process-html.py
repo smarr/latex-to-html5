@@ -71,6 +71,16 @@ def remove_superfluous_id_after_footnote(soup):
       sib.extract()
       
 
+def wrap_body_in_article(soup):
+    body = soup.find("body")
+    article = soup.new_tag("article")
+    # can't loop over .contents directly because it is changing
+    while len(body.contents) > 0:
+        article.append(body.contents[0].extract())
+    body.append(article)
+
+
+wrap_body_in_article(soup)
 remove_tex4ht_comments(soup)
 remove_unwanted_meta(soup)
 
