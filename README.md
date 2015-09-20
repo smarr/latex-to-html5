@@ -9,7 +9,31 @@ the Web to concentrate on the semantic elements and provide a suitable CSS file.
 
 ### Requirements
 
- - tex4ht
- - tidy
+ - tex4ht aka htlatex
+ - tidy, see https://github.com/htacg/tidy-html5
  - Python
- - Perl
+
+### Usage
+
+```
+$ ht-latex tex-file output-dir
+```
+
+The output file is going to be `tex-file-final.html`.
+
+### Examples
+
+ - http://stefan-marr.de/papers/pldi-marr-et-al-zero-overhead-metaprogramming/
+ - http://stefan-marr.de/papers/oopsla-marr-ducasse-meta-tracing-vs-partial-evaluation/
+
+### Status and Contributions
+
+The current status of this project is: *highly experimental and optimized for
+myself*, ah, and of course, it works on my machine... 
+
+Pull requests to improve the situation are very welcome.
+
+### Tests
+
+There are a couple of basic tests in `tests`, which can be executed with
+`run-tests.py`.
