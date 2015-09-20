@@ -85,41 +85,46 @@ def combine_citation_links(soup):
 
 
 def remove_font_spans(soup):
-  for e in soup.find_all("span", {'class' : re.compile("^cm") }):
-    e.replace_with(e.contents[0])
-  for e in soup.find_all("span", {'class' : re.compile("^pcrr") }):
-    e.replace_with(e.contents[0])
-  for e in soup.find_all("span", {'class' : re.compile("^ptmr") }):
-    e.replace_with(e.contents[0])
+    for e in soup.find_all("span", {'class' : re.compile("^cm") }):
+        e.replace_with(e.contents[0])
+    for e in soup.find_all("span", {'class' : re.compile("^pcrr") }):
+        e.replace_with(e.contents[0])
+    for e in soup.find_all("span", {'class' : re.compile("^ptmr") }):
+        e.replace_with(e.contents[0])
+
 
 def remove_following_newline(e):
-  sibling = e.next_sibling
-  if sibling.string == '\n':
-    sibling.extract()
+    sibling = e.next_sibling
+    if sibling.string == '\n':
+        sibling.extract()
+
 
 def remove_unwanted_meta(soup):
-  for e in soup.find_all("meta"):
-    if e.has_attr('name') and e['name'] in ['date', 'src', 'originator', 'generator']:
-      remove_following_newline(e)
-      e.extract()
-  
-def remove_tex4ht_comments(soup):
-  for e in soup.find_all(text=lambda text:isinstance(text, Doctype)):
-    remove_following_newline(e)
-    e.extract()
+    for e in soup.find_all("meta"):
+        if e.has_attr('name') and e['name'] in ['date', 'src', 'originator',
+                                                'generator']:
+            remove_following_newline(e)
+            e.extract()
 
-  for e in soup.find_all(text=lambda text:isinstance(text, Comment)):
-    if 'fn-in,' in e.string or e.string.startswith('?xml') or e.string.startswith('http://www.w3.org/TR/xhtml1'):
-      remove_following_newline(e)
-      e.extract()
-    else:
-      print e
+
+def remove_tex4ht_comments(soup):
+    for e in soup.find_all(text=lambda text:isinstance(text, Doctype)):
+        remove_following_newline(e)
+        e.extract()
+
+    for e in soup.find_all(text=lambda text:isinstance(text, Comment)):
+        if 'fn-in,' in e.string or e.string.startswith('?xml') or e.string.startswith('http://www.w3.org/TR/xhtml1'):
+            remove_following_newline(e)
+            e.extract()
+        else:
+            print e
+
 
 def remove_superfluous_id_after_footnote(soup):
-  for e in soup.find_all("sup", {'class' : 'textsuperscript'}):
-    sib = e.next_sibling
-    if sib.name == "a" and sib.has_attr('id') and sib.has_attr('name') and sib['id'] == sib['name']:
-      sib.extract()
+    for e in soup.find_all("sup", {'class' : 'textsuperscript'}):
+        sib = e.next_sibling
+        if sib.name == "a" and sib.has_attr('id') and sib.has_attr('name') and sib['id'] == sib['name']:
+            sib.extract()
       
 
 def wrap_body_in_article(soup):
