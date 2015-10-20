@@ -1,4 +1,4 @@
-Latex to HTML5
+LaTeX to HTML5
 ==============
 
 This repository contains configuration files for tex4ht and post processing
