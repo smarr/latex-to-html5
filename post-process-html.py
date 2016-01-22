@@ -169,7 +169,7 @@ def transform_header(soap):
 
     # move abstract, if available
     abstract = soup.find("div", {"class" : "abstract"})
-    if abstract:
+    if abstract and abstract.find("div", {"class" : "center"}):
         header.append(abstract.extract())
         ab_t = abstract.find("div", {"class" : "center"})
         if ab_t.p.string == "Abstract":
