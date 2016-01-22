@@ -47,6 +47,8 @@ def combine_citation_links(soup):
                 continue
 
         # Process text like '[<a>Author</a>,&nbsp;<a>Year</a>]'
+        # This also includes situations with multiple references, that are
+        # listed with author+year.
         if (e.next_sibling == u',\xa0' and
                 isinstance(e.next_sibling.next_sibling, Tag) and
                 e.next_sibling.next_sibling.name == "a" and
@@ -75,13 +77,13 @@ def combine_citation_links(soup):
                 e.append(comma_space_node)
                 e.append(year_node)
 
-                # now, make sure we have the bracket directly connected with
-                # a &thinsp; to the element before
-                assert isinstance(e.previous_sibling, NavigableString)
-                s = unicode(e.previous_sibling)
-                assert s[-1] == "["
-                assert s[-2].isspace()
-                e.previous_sibling.replace_with(s[:-2] + u"\N{THIN SPACE}[")
+                # if we are the first in the list, make sure the bracket is
+                # directly connected with a &thinsp; to the element before
+                if isinstance(e.previous_sibling, NavigableString):
+                    s = unicode(e.previous_sibling)
+                    if s[-1] == "[" and s[-2].isspace():
+                        e.previous_sibling.replace_with(s[:-2] +
+                                                        u"\N{THIN SPACE}[")
 
 
 def remove_font_spans(soup):
