@@ -139,7 +139,7 @@ def transform_header(soap):
     if head.contents[0] == "\n":
         head.contents[0].extract()
     title_h2 = head.contents[0].extract()
-    title = title_h2.string
+    title = title_h2.getText()
 
     if head.contents[0] == "\n":
         head.contents[0].extract()
