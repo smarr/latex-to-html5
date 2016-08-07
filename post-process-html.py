@@ -131,10 +131,9 @@ def remove_superfluous_id_after_footnote(soup):
 
 def transform_header(soap):
     head = soup.find("div", {"class" : "maketitle"})
-    if not head:
-        return
-    assert head.contents[1].name == "h2"
-    assert head.contents[3].name == "div"
+    if (not head or head.contents[1].name != "h2" or
+                head.contents[3].name != "div"):
+        return  # the format of the header is not currently supported
 
     if head.contents[0] == "\n":
         head.contents[0].extract()
