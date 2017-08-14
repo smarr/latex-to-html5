@@ -87,6 +87,10 @@ def combine_citation_links(soup):
 
 
 def remove_font_spans(soup):
+    for e in soup.find_all("span", {'class' : re.compile("^LinLibertine") }):
+        e.replace_with(e.contents[0])
+    for e in soup.find_all("span", {'class' : re.compile("^LinBiolinum") }):
+        e.replace_with(e.contents[0])
     for e in soup.find_all("span", {'class' : re.compile("^cm") }):
         e.replace_with(e.contents[0])
     for e in soup.find_all("span", {'class' : re.compile("^pcrr") }):
