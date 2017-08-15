@@ -9,9 +9,10 @@ the Web to concentrate on the semantic elements and provide a suitable CSS file.
 
 ### Requirements
 
- - tex4ht aka htlatex
- - tidy, see https://github.com/htacg/tidy-html5
- - Python
+ - [tex4ht](https://www.ctan.org/pkg/tex4ht?lang=en) *a.k.a.* htlatex
+ - [tidy](https://github.com/htacg/tidy-html5)
+ - Python ([BeautifulSoup4](https://pypi.python.org/pypi/beautifulsoup4) and [html5lib](https://pypi.python.org/pypi/html5lib))
+ - convert (from [ImageMagick](http://www.imagemagick.org/script/index.php)), if you have your figures as PDF files
 
 ### Usage
 
@@ -29,7 +30,7 @@ The output file is going to be `tex-file-final.html`.
 ### Status and Contributions
 
 The current status of this project is: *highly experimental and optimized for
-myself*, ah, and of course, it works on my machine... 
+myself*, ah, and of course, it works on my machine...
 
 Pull requests to improve the situation are very welcome.
 
