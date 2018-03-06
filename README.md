@@ -10,8 +10,10 @@ the Web to concentrate on the semantic elements and provide a suitable CSS file.
 ### Requirements
 
  - tex4ht aka htlatex
- - tidy, see https://github.com/htacg/tidy-html5
- - Python
+ - tidy, see http://www.html-tidy.org/
+ - Python, and packages via `pip install`
+   - BeautifulSoup4
+   - html5lib
 
 ### Usage
 
