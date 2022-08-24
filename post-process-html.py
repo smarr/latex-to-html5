@@ -14,7 +14,7 @@ def combine_citation_links(soup):
         if e.parent is None:
             continue
 
-        if e.previous_sibling == u',\xa0':
+        if e.previous_sibling == ',\xa0':
             # within a list, use normal spaces to avoid typesetting issues
             e.previous_sibling.replace_with(", ")
 
@@ -23,23 +23,23 @@ def combine_citation_links(soup):
             continue
 
         # Process text like '<a>Author</a>&nbsp;[<a>Year</a>]'
-        if (e.next_sibling == u'\xa0[' and e.next_sibling and
+        if (e.next_sibling == '\xa0[' and e.next_sibling and
                 e.next_sibling.next_sibling and
                 e.next_sibling.next_sibling.next_sibling):
             space_bracket = e.next_sibling
             year_node_a   = e.next_sibling.next_sibling
             following_bracket_and_more = e.next_sibling.next_sibling.next_sibling
 
-            if unicode(following_bracket_and_more)[0] == ']':
+            if str(following_bracket_and_more)[0] == ']':
                 assert e.attrs['href'] == year_node_a.attrs['href'], "should be always the same, because we want to merge those two <a> tags"
-                year = unicode(year_node_a.contents[0])
-                e.contents[0].replace_with(e.contents[0] + u'\xa0[' + year + "]")
+                year = str(year_node_a.contents[0])
+                e.contents[0].replace_with(e.contents[0] + '\xa0[' + year + "]")
                 space_bracket.extract()
                 year_node_a.extract()
 
                 # remove closing bracket
                 following_bracket_and_more.replace_with(
-                    unicode(following_bracket_and_more)[1:])
+                    str(following_bracket_and_more)[1:])
                 continue
             else:
                 # transform 'Author&nbsp;[<a>Year</a>, <a>Year2</a>]'
@@ -49,7 +49,7 @@ def combine_citation_links(soup):
         # Process text like '[<a>Author</a>,&nbsp;<a>Year</a>]'
         # This also includes situations with multiple references, that are
         # listed with author+year.
-        if (e.next_sibling == u',\xa0' and
+        if (e.next_sibling == ',\xa0' and
                 isinstance(e.next_sibling.next_sibling, Tag) and
                 e.next_sibling.next_sibling.name == "a" and
                 e.next_sibling.next_sibling.attrs['href'] == e.attrs['href']):
@@ -64,11 +64,11 @@ def combine_citation_links(soup):
                 # looks like we got multiple years with the same author in
                 # succession, remove the link on the author to avoid confusion
                 prev = e.previous_sibling
-                if prev == u',\xa0':
+                if prev == ',\xa0':
                     prev.replace_with(", ")
                 elif (isinstance(prev, NavigableString) and
-                        unicode(prev)[-1] == "["):
-                    prev.replace_with(s[:-2] + u"\N{THIN SPACE}[")
+                        str(prev)[-1] == "["):
+                    prev.replace_with(s[:-2] + "\N{THIN SPACE}[")
                 e.replace_with(e.contents[0])
 
             else:
@@ -80,10 +80,10 @@ def combine_citation_links(soup):
                 # if we are the first in the list, make sure the bracket is
                 # directly connected with a &thinsp; to the element before
                 if isinstance(e.previous_sibling, NavigableString):
-                    s = unicode(e.previous_sibling)
+                    s = str(e.previous_sibling)
                     if s[-1] == "[" and s[-2].isspace():
                         e.previous_sibling.replace_with(s[:-2] +
-                                                        u"\N{THIN SPACE}[")
+                                                        "\N{THIN SPACE}[")
 
 
 def remove_font_spans(soup):
@@ -123,7 +123,7 @@ def remove_tex4ht_comments(soup):
             remove_following_newline(e)
             e.extract()
         else:
-            print e
+            print(e)
 
 
 def remove_superfluous_id_after_footnote(soup):
@@ -131,7 +131,7 @@ def remove_superfluous_id_after_footnote(soup):
         sib = e.next_sibling
         if sib.name == "a" and sib.has_attr('id') and sib.has_attr('name') and sib['id'] == sib['name']:
             sib.extract()
-      
+
 
 def transform_header(soap):
     head = soup.find("div", {"class" : "maketitle"})
@@ -210,12 +210,13 @@ combine_citation_links(soup)
 remove_font_spans(soup)
 transform_header(soup)
 add_line_numbers_to_listings(soup)
-result = soup.encode(encoding="utf-8", formatter="html")
+result = soup.encode(encoding="utf-8", formatter="html").decode()
 
-result = result.replace('\xef\xac\x80', 'ff')
-result = result.replace('\xef\xac\x81', 'fi')
-result = result.replace('\xef\xac\x82', 'fl')
-result = result.replace('\xef\xac\x83', 'ffi')
-result = result.replace('\xef\xac\x84', 'ffl')
+result = result.replace('&ffilig;', 'ffi')
+result = result.replace('&fflig;', 'ff')
+result = result.replace('&ffllig;', 'ffl')
+result = result.replace('&fjlig;', 'fj')
+result = result.replace('&fllig;', 'fl')
+result = result.replace('&filig;', 'fi')
 
-print result
+print(result)
