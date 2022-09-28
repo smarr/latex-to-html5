@@ -18,7 +18,7 @@ def cleanup_directory(d):
 def exec_test(d):
     os.chdir(d)
     try:
-        subprocess.check_output([BASE_DIR + '/ht-latex', 'test.tex', '.'])
+        subprocess.check_output([BASE_DIR + '/ht-latex', 'test.tex', '.'], stderr=subprocess.STDOUT)
         try:
             subprocess.check_output(['diff', 'expected.html', 'test-final.html'])
         except subprocess.CalledProcessError as e:
