@@ -3,7 +3,20 @@ import os
 import subprocess
 import sys
 
+DEV_NULL = open(os.devnull, 'w')
+
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+
+def check_delta_available():
+    """Delta is a nice tool for nicer diffs"""
+    try:
+        ret_code = subprocess.call(['delta', '--version'], stdout=DEV_NULL)
+        return ret_code == 0
+    except:
+        return False
+
+
+HAS_DELTA = check_delta_available()
 
 
 def cleanup_directory(d):
@@ -20,7 +33,8 @@ def exec_test(d):
     try:
         subprocess.check_output([BASE_DIR + '/ht-latex', 'test.tex', '.'], stderr=subprocess.STDOUT)
         try:
-            subprocess.check_output(['diff', 'expected.html', 'test-final.html'])
+            diff_cmd = 'delta' if HAS_DELTA else 'diff'
+            subprocess.check_output([diff_cmd, 'expected.html', 'test-final.html'])
         except subprocess.CalledProcessError as e:
             print(d, 'FAILED')
             print("Diff between expected and actual HTML:")
