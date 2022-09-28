@@ -22,26 +22,26 @@ def exec_test(d):
         try:
             subprocess.check_output(['diff', 'expected.html', 'test-final.html'])
         except subprocess.CalledProcessError as e:
-            print d, 'FAILED'
-            print "Diff between expected and actual HTML:"
-            print e.output
+            print(d, 'FAILED')
+            print("Diff between expected and actual HTML:")
+            print(e.output.decode('utf-8'))
             return False
 
         cleanup_directory(d)
         return True
     except subprocess.CalledProcessError as e:
-        print d, 'FAILED'
-        print "Latex Output:"
-        print e.output
+        print(d, 'FAILED')
+        print("Latex Output:")
+        print(e.output.decode('utf-8'))
         return False
 
 
 def exec_tests():
     failed = False
-  
+
     for f in os.listdir('tests'):
         os.chdir(BASE_DIR)
-        print "-------", f
+        print("-------", f)
         if os.path.isdir('tests/' + f):
             if not exec_test('tests/' + f):
                 failed = True
