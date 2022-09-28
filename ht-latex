@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 # set -x
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 MAIN_FILE="${1%.tex}"
 OUTPUT_FOLDER="$2"
-HTML_SETTINGS="$SCRIPT_DIR/html-plain,fn-in,charset=utf-8" 
+HTML_SETTINGS="${SCRIPT_DIR}/html-plain,fn-in,charset=utf-8"
 ENCODING="-cunihtf -utf8"
 
 mkdir -p $OUTPUT_FOLDER
