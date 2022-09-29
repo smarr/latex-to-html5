@@ -29,7 +29,11 @@ def cleanup_directory(d):
 
 
 def exec_test(d):
-    os.chdir(d)
+    try:
+        os.chdir(d)
+    except FileNotFoundError as e:
+        print(d, 'does not seem to exist')
+        return False
     try:
         subprocess.check_output([BASE_DIR + '/ht-latex', 'test.tex', '.'], stderr=subprocess.STDOUT)
         try:
