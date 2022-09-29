@@ -206,12 +206,18 @@ def wrap_body_in_article(soup):
 
 def add_line_numbers_to_listings(soup):
     for f in soup.find_all("figure"):
-        div_ln = f.find("div", {"class" : "linenumbers"})
+        div_ln = f.find("div", {"class": "linenumbers"})
         if div_ln:
             code = f.find("code")
             lines = code.find_all("a")  # find by labels, might be brittle
             ln_nums = " ".join([str(i) for i in range(1, len(lines) + 1)])
             div_ln.string = ln_nums
+
+
+def in_code_remove_span_making_text_black(soup):
+    for c in soup.find_all('code'):
+        for e in c.find_all("span", attrs={"style": "color:#000000"}):
+            e.replace_with(e.next_element)
 
 
 wrap_body_in_article(soup)
@@ -223,6 +229,7 @@ combine_citation_links(soup)
 remove_font_spans(soup)
 transform_header(soup)
 add_line_numbers_to_listings(soup)
+in_code_remove_span_making_text_black(soup)
 result = soup.encode(encoding="utf-8", formatter="html").decode()
 
 result = result.replace('&ffilig;', 'ffi')
