@@ -61,10 +61,10 @@ def exec_test(d):
 def exec_tests():
     failed = False
 
-    for f in os.listdir('tests'):
+    for f in sorted(os.listdir('tests')):
         os.chdir(BASE_DIR)
-        print("-------", f)
         if os.path.isdir('tests/' + f):
+            print("-------", f)
             if not exec_test('tests/' + f):
                 failed = True
     return failed
