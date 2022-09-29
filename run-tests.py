@@ -33,8 +33,12 @@ def exec_test(d):
     try:
         subprocess.check_output([BASE_DIR + '/ht-latex', 'test.tex', '.'], stderr=subprocess.STDOUT)
         try:
-            diff_cmd = 'delta' if HAS_DELTA else 'diff'
-            subprocess.check_output([diff_cmd, 'expected.html', 'test-final.html'])
+            if HAS_DELTA:
+                diff_cmd = ['delta', '--syntax-theme', 'Solarized (light)']
+            else:
+                diff_cmd = ['diff']
+
+            subprocess.check_output(diff_cmd + ['expected.html', 'test-final.html'])
         except subprocess.CalledProcessError as e:
             print(d, 'FAILED')
             print("Diff between expected and actual HTML:")
