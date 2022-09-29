@@ -59,15 +59,15 @@ def exec_test(d):
 
 
 def exec_tests():
-    failed = False
+    all_pass = True
 
     for f in sorted(os.listdir('tests')):
         os.chdir(BASE_DIR)
         if os.path.isdir('tests/' + f):
             print("-------", f)
             if not exec_test('tests/' + f):
-                failed = True
-    return failed
+                all_pass = False
+    return all_pass
 
 
 if len(sys.argv) > 1:
