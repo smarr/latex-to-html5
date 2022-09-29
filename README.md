@@ -10,7 +10,7 @@ the Web to concentrate on the semantic elements and provide a suitable CSS file.
 ### Requirements
 
  - tex4ht aka htlatex
- - tidy, see http://www.html-tidy.org/
+ - tidy, see https://www.html-tidy.org/
  - Python, and packages via `pip install`
    - BeautifulSoup4
    - html5lib
@@ -31,7 +31,7 @@ The output file is going to be `tex-file-final.html`.
 ### Status and Contributions
 
 The current status of this project is: *highly experimental and optimized for
-myself*, ah, and of course, it works on my machine... 
+myself*, ah, and of course, it works on my machine...
 
 Pull requests to improve the situation are very welcome.
 

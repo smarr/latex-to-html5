@@ -3,7 +3,20 @@ import os
 import subprocess
 import sys
 
+DEV_NULL = open(os.devnull, 'w')
+
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+
+def check_delta_available():
+    """Delta is a nice tool for nicer diffs"""
+    try:
+        ret_code = subprocess.call(['delta', '--version'], stdout=DEV_NULL)
+        return ret_code == 0
+    except:
+        return False
+
+
+HAS_DELTA = check_delta_available()
 
 
 def cleanup_directory(d):
@@ -16,36 +29,45 @@ def cleanup_directory(d):
 
 
 def exec_test(d):
-    os.chdir(d)
     try:
-        subprocess.check_output([BASE_DIR + '/ht-latex', 'test.tex', '.'])
+        os.chdir(d)
+    except FileNotFoundError as e:
+        print(d, 'does not seem to exist')
+        return False
+    try:
+        subprocess.check_output([BASE_DIR + '/ht-latex', 'test.tex', '.'], stderr=subprocess.STDOUT)
         try:
-            subprocess.check_output(['diff', 'expected.html', 'test-final.html'])
+            if HAS_DELTA:
+                diff_cmd = ['delta', '--syntax-theme', 'Solarized (light)']
+            else:
+                diff_cmd = ['diff']
+
+            subprocess.check_output(diff_cmd + ['expected.html', 'test-final.html'])
         except subprocess.CalledProcessError as e:
-            print d, 'FAILED'
-            print "Diff between expected and actual HTML:"
-            print e.output
+            print(d, 'FAILED')
+            print("Diff between expected and actual HTML:")
+            print(e.output.decode('utf-8'))
             return False
 
         cleanup_directory(d)
         return True
     except subprocess.CalledProcessError as e:
-        print d, 'FAILED'
-        print "Latex Output:"
-        print e.output
+        print(d, 'FAILED')
+        print("Latex Output:")
+        print(e.output.decode('utf-8'))
         return False
 
 
 def exec_tests():
-    failed = False
-  
-    for f in os.listdir('tests'):
+    all_pass = True
+
+    for f in sorted(os.listdir('tests')):
         os.chdir(BASE_DIR)
-        print "-------", f
         if os.path.isdir('tests/' + f):
+            print("-------", f)
             if not exec_test('tests/' + f):
-                failed = True
-    return failed
+                all_pass = False
+    return all_pass
 
 
 if len(sys.argv) > 1:

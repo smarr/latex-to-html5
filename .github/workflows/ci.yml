@@ -1,0 +1,25 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    container:
+      image: texlive/texlive:latest
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v3
+
+      - name: Check for dockerenv file
+        run: (ls /.dockerenv && echo Found dockerenv) || (echo No dockerenv)
+
+      - name: Install Dependencies
+        run: |
+            apt-get update
+            apt-get install -y tidy python3-pip
+            python -m pip install beautifulsoup4 html5lib
+
+      - name: Run Tests
+        run: |
+            python run-tests.py
