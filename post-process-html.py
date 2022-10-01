@@ -237,5 +237,6 @@ result = result.replace('&ffllig;', 'ffl')
 result = result.replace('&fjlig;', 'fj')
 result = result.replace('&fllig;', 'fl')
 result = result.replace('&filig;', 'fi')
+result = result.replace('!!TEXTBACKSLASH!!', '\\')
 
 print(result)
