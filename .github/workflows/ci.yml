@@ -11,9 +11,6 @@ jobs:
       - name: Set up Git repository
         uses: actions/checkout@v3
 
-      - name: Check for dockerenv file
-        run: (ls /.dockerenv && echo Found dockerenv) || (echo No dockerenv)
-
       - name: Install Dependencies
         run: |
             apt-get update
