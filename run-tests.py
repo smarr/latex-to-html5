@@ -58,12 +58,18 @@ def exec_test(d):
         return False
 
 
+def is_test(f):
+    if not os.path.isdir(f):
+        return False
+    return os.path.isfile(f + '/test.tex')
+
+
 def exec_tests():
     all_pass = True
 
     for f in sorted(os.listdir('tests')):
         os.chdir(BASE_DIR)
-        if os.path.isdir('tests/' + f):
+        if is_test('tests/' + f):
             print("-------", f)
             if not exec_test('tests/' + f):
                 all_pass = False
