@@ -219,6 +219,12 @@ def in_code_remove_span_making_text_black(soup):
             e.replace_with(e.next_element)
 
 
+def in_code_remove_line_anchors(soup):
+    for c in soup.find_all('code'):
+        for e in c.find_all("a", {'id': re.compile("^x1")}):
+            e.replace_with(e.next_element)
+
+
 def remove_url_class(soup):
     for a in soup.find_all("a", {"class": "url"}):
         del a.attrs['class']
@@ -234,6 +240,7 @@ remove_font_spans(soup)
 transform_header(soup)
 add_line_numbers_to_listings(soup)
 in_code_remove_span_making_text_black(soup)
+in_code_remove_line_anchors(soup)
 remove_url_class(soup)
 
 result = soup.encode(encoding="utf-8", formatter="html").decode()
