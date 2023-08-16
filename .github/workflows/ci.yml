@@ -15,7 +15,7 @@ jobs:
         run: |
             apt-get update
             apt-get install -y tidy python3-pip
-            python -m pip install beautifulsoup4 html5lib
+            python -m pip install --break-system-packages beautifulsoup4 html5lib
 
       - name: Run Tests
         run: |
