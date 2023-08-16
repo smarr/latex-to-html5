@@ -127,11 +127,11 @@ def remove_unwanted_meta(soup):
 
 
 def remove_tex4ht_comments(soup):
-    for e in soup.find_all(text=lambda text:isinstance(text, Doctype)):
+    for e in soup.find_all(string=lambda text:isinstance(text, Doctype)):
         remove_following_newline(e)
         e.extract()
 
-    for e in soup.find_all(text=lambda text:isinstance(text, Comment)):
+    for e in soup.find_all(string=lambda text:isinstance(text, Comment)):
         if 'fn-in,' in e.string or e.string.startswith('?xml') or e.string.startswith('http://www.w3.org/TR/xhtml1'):
             remove_following_newline(e)
             e.extract()
