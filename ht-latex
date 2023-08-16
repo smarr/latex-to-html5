@@ -11,9 +11,9 @@ ENCODING="-cunihtf -utf8"
 mkdir -p $OUTPUT_FOLDER
 
 echo Pre-Build With PDF Latex
-pdflatex $MAIN_FILE
+pdflatex $MAIN_FILE || true
 bibtex   $MAIN_FILE
-pdflatex $MAIN_FILE
+pdflatex $MAIN_FILE || true
 pdflatex $MAIN_FILE
 
 echo
@@ -24,12 +24,14 @@ latex $5 '\makeatletter\def\HCode{\futurelet\HCode\HChar}\def\HChar{\ifx"\HCode\
 
 echo
 echo Do Tex4HT
-tex4ht -f/$MAIN_FILE  -i~/tex4ht.dir/texmf/tex4ht/ht-fonts/ $ENCODING
+tex4ht -f/$MAIN_FILE -i~/tex4ht.dir/texmf/tex4ht/ht-fonts/ $ENCODING
 t4ht -f/$MAIN_FILE -d$OUTPUT_FOLDER
 
 echo
 echo Run Tidy
-tidy -ashtml -utf8 $OUTPUT_FOLDER/$MAIN_FILE.html > $OUTPUT_FOLDER/$MAIN_FILE-tidy.html
+cp $MAIN_FILE.html $OUTPUT_FOLDER/
+tidy -ashtml -utf8 $OUTPUT_FOLDER/$MAIN_FILE.html > $OUTPUT_FOLDER/$MAIN_FILE-tidy.html || true
 
 echo Run Post Process HTML
+export PYTHONWARNINGS=ignore
 $SCRIPT_DIR/post-process-html.py $OUTPUT_FOLDER/$MAIN_FILE-tidy.html > $OUTPUT_FOLDER/$MAIN_FILE-final.html
