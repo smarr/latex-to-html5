@@ -13,3 +13,8 @@ test.tmp
 test.xref
 test.pdf
 test.xcp
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
